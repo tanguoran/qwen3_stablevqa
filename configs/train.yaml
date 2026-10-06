@@ -1,0 +1,40 @@
+paths:
+  video_list_dir: annotations
+  feature_dir: flow_quantiles
+  output_dir: runs/quantile_flow
+
+model:
+  model_id: Qwen/Qwen3-VL-8B-Instruct
+  attn_implementation: sdpa
+  quantization: 8bit        # 8bit | none
+  drop_unused: true         # 训练只用文本部分的 hidden state，删除视觉塔和 lm_head 以省显存
+
+data:
+  score_range: [0, 100]     # 训练标签先截断到该范围（train 中存在 237 的异常值）
+  log_k: 100                # 光流压缩 sign(x)*log1p(k*|x|)
+  num_workers: 0
+
+encoder:
+  num_flow_tokens: 16
+  grid: 4                   # 必须与预处理一致
+  num_quantiles: 19
+  num_channels: 3
+  num_frames: 64            # 光流帧数 = 预处理窗口帧数(65) - 1
+  raw_dim: 256
+  resample_dim: 512
+  num_heads: 8
+  init_log_scale: -1.5
+
+loss:
+  mse_weight: 1.0
+  plcc_weight: 1.0          # 1 - PLCC，batch 内计算，batch_size 需 >= 2
+
+train:
+  seed: 42
+  batch_size: 4
+  grad_accum: 2
+  epochs: 20
+  lr: 1.0e-4
+  weight_decay: 0.01
+  max_grad_norm: 1.0
+  log_every: 10

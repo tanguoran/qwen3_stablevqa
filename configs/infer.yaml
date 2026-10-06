@@ -1,0 +1,11 @@
+checkpoint: runs/quantile_flow/best.pt
+
+# 视频路径：绝对路径，或相对于项目根目录
+videos:
+  - VSdataset2.0/01365.mp4
+  - VSdataset2.0/00800.mp4
+
+# 若视频名出现在这些列表里，会同时打印真实分数做对比
+annotation_dir: annotations
+
+# 光流提取参数沿用 configs/preprocess.yaml（必须与训练时一致）

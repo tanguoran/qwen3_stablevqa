@@ -1,0 +1,26 @@
+paths:
+  video_dir: VSdataset2.0
+  annotation_dir: annotations
+  output_dir: flow_quantiles
+
+splits: [train, val, test]
+
+window:
+  num_frames: 65      # 视频窗口帧数，产生 num_frames-1 = 64 对相邻帧光流（模型输入 64 帧）
+  position: center    # center | start
+
+raft:
+  model: raft_large
+  short_side: 360     # 帧缩放后的短边，最终尺寸取 8 的倍数
+  num_flow_updates: 12
+  batch_pairs: 16
+  amp: false
+  device: cuda
+
+features:
+  grid: 4                                     # 空间网格 grid x grid
+  quantiles: [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95]
+  # 通道固定为 dx, dy, mag；光流值除以缩放后短边，使不同分辨率可比
+
+run:
+  overwrite: false
